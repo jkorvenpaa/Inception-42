@@ -1,0 +1,12 @@
+# Environment variables
+.env
+
+# Secrets
+secrets/
+
+# Private keys / certificates
+*.key
+*.pem
+
+# macOS
+.DS_Store
