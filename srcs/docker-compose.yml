@@ -46,6 +46,29 @@ services:
       - mariadb
 
     restart: unless-stopped
+  
+  nginx:
+    image: nginx
+    container_name: nginx
+
+    build:
+      context: ./requirements/nginx
+      args:
+        DOMAIN_NAME: ${DOMAIN_NAME}
+
+    ports:
+      - "443:443"
+
+    volumes:
+      - wordpress_data:/var/www/html
+
+    networks:
+      - inception
+
+    depends_on:
+      - wordpress
+
+    restart: unless-stopped
 
 networks:
   inception:
