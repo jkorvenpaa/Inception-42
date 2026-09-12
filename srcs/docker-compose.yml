@@ -82,7 +82,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /home/jenni/data/mariadb
+      device: /home/jkorvenp/data/mariadb
 
   wordpress_data:
     name: wordpress_data
@@ -90,7 +90,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /home/jenni/data/wordpress
+      device: /home/jkorvenp/data/wordpress
 
 secrets:
   db_password:

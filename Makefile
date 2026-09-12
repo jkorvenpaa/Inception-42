@@ -2,7 +2,7 @@ NAME = inception
 
 COMPOSE = sudo docker compose -f srcs/docker-compose.yml
 
-DATA_DIR = /home/jenni/data
+DATA_DIR = /home/jkorvenp/data
 MARIADB_DIR = $(DATA_DIR)/mariadb
 WORDPRESS_DIR = $(DATA_DIR)/wordpress
 
