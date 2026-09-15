@@ -5,10 +5,12 @@ set -e
 DB_PASSWORD=$(cat /run/secrets/db_password)
 WP_ADMIN_PASSWORD=$(cat /run/secrets/wp_admin_password)
 WP_USER_PASSWORD=$(cat /run/secrets/wp_user_password)
+DB_HOST="mariadb:3306"
 
 until mariadb \
     --connect-timeout=2 \
     -h mariadb \
+    -P "${DB_HOST##*:}" \
     -u "${MYSQL_USER}" \
     -p"${DB_PASSWORD}" \
     "${MYSQL_DATABASE}" \
@@ -31,7 +33,7 @@ if [ ! -f /var/www/html/wp-config.php ]; then
         --dbname="${MYSQL_DATABASE}" \
         --dbuser="${MYSQL_USER}" \
         --dbpass="${DB_PASSWORD}" \
-        --dbhost="mariadb:3306" \
+        --dbhost="${DB_HOST}" \
         --allow-root
 
     wp core install \
@@ -57,6 +59,9 @@ if [ ! -f /var/www/html/wp-config.php ]; then
 else
     echo "WordPress already installed."
 fi
+wp config set DB_HOST "${DB_HOST}" \
+    --path=/var/www/html \
+    --allow-root
 
 mkdir -p /run/php
 

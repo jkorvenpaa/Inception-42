@@ -203,3 +203,160 @@ make
 Docker Compose rebuilds the required images and recreates services when necessary.
 
 Configuration changes should be verified after rebuilding to ensure that the affected service is operating as expected.
+
+
+## Evaluation Commands
+
+The following commands are useful during the project evaluation.
+
+### Copy the Project to the VM
+
+```bash
+scp -P 2222 -r inception jkorvenp@127.0.0.1:/home/jkorvenp/
+```
+
+Copies the `inception` directory recursively to the VM through the SSH port forwarding on port 2222.
+
+### Connect to the VM
+
+```bash
+ssh -p 2222 jkorvenp@127.0.0.1
+```
+
+Opens an SSH connection to the VM through port 2222.
+
+### Check Running Services
+
+```bash
+sudo docker compose -f srcs/docker-compose.yml ps
+```
+
+Displays the state of the NGINX, WordPress and MariaDB services.
+
+### Check Docker Networks
+
+```bash
+sudo docker network ls
+```
+
+Lists Docker networks. The `inception` network should be present while the project is running.
+
+### Check HTTPS
+
+```bash
+curl -k -I https://jkorvenp.42.fr
+```
+
+Checks that the website responds through HTTPS on port 443. The `-k` option accepts the self-signed certificate and `-I` displays the response headers.
+
+### Check That HTTP Is Unavailable
+
+```bash
+curl -k -I http://jkorvenp.42.fr
+```
+
+Checks that the website is not available through HTTP on port 80.
+
+### Check TLS 1.2
+
+```bash
+curl -k -I --tlsv1.2 --tls-max 1.2 https://jkorvenp.42.fr
+```
+
+Forces the connection to use TLS 1.2 and verifies that TLS 1.2 is accepted.
+
+### Check That TLS 1.1 Is Rejected
+
+```bash
+curl -k -I --tlsv1.1 --tls-max 1.1 https://jkorvenp.42.fr
+```
+
+Forces the connection to use TLS 1.1. The connection should fail because NGINX accepts only TLS 1.2 and TLS 1.3.
+
+### Check Docker Volumes
+
+```bash
+sudo docker volume ls
+```
+
+Lists the Docker volumes. The project should have `wordpress_data` and `mariadb_data`.
+
+### Open WordPress Administration
+
+```text
+https://jkorvenp.42.fr/wp-admin
+```
+
+Opens the WordPress administration interface in a browser.
+
+### Enter the MariaDB Container
+
+```bash
+sudo docker exec -it mariadb sh
+```
+
+Opens an interactive shell inside the running MariaDB container.
+
+### Connect to the WordPress Database
+
+From inside the MariaDB container:
+
+```bash
+mariadb -u wpuser -p wordpress
+```
+
+Connects to the `wordpress` database as the `wpuser` database user and prompts for its password.
+
+### List Databases
+
+From the MariaDB prompt:
+
+```sql
+SHOW DATABASES;
+```
+
+Displays the available databases.
+
+### Select the WordPress Database
+
+```sql
+USE wordpress;
+```
+
+Selects the `wordpress` database.
+
+### List WordPress Tables
+
+```sql
+SHOW TABLES;
+```
+
+Displays the tables stored in the WordPress database.
+
+### Check WordPress Comments
+
+```sql
+SELECT * FROM wp_comments;
+```
+
+Displays the rows in the WordPress comments table and can be used to verify that WordPress data is stored in MariaDB.
+
+### Search the Project Files
+
+```bash
+grep -rni "" .
+```
+
+Recursively prints the contents of files in the current project directory with file names and line numbers. A search term can be placed between the quotation marks when checking for a specific configuration value.
+
+### Clean Docker Before Evaluation
+
+```bash
+sudo docker stop $(sudo docker ps -qa)
+sudo docker rm $(sudo docker ps -qa)
+sudo docker rmi -f $(sudo docker images -qa)
+sudo docker volume rm $(sudo docker volume ls -q)
+sudo docker network rm $(sudo docker network ls -q) 2>/dev/null
+```
+
+These commands stop and remove existing containers, remove Docker images and volumes, and remove Docker networks. They are used before building the submitted project so that the evaluation starts from a clean Docker environment.
